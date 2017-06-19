@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@localhost:1521:xe"/>
+        <property name="username" value="kgk"/>
+        <property name="password" value="kgk123"/>
+    </bean>
+
+    <bean id="mysessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="mappingResources">
+            <list>
+                <value>main/java/com/model/employee.hbm.xml</value>
+                <value>main/java/com/model/address.hbm.xml</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.Oracle9Dialect</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.show_sql">true</prop>
+
+            </props>
+        </property>
+    </bean>
+
+    <bean id="template" class="org.springframework.orm.hibernate3.HibernateTemplate">
+        <property name="sessionFactory" ref="mysessionFactory"/>
+    </bean>
+
+    <bean id="empDao" class="main.java.com.dao.impl.EmployeeDaoImpl">
+        <property name="hibernateTemplate" ref="template"/>
+    </bean>
+
+    <bean id="addressDao" class="main.java.com.dao.impl.AddressDaoImpl">
+        <property name="hibernateTemplate" ref="template"/>
+    </bean>
+
+    <bean id="empService" class="main.java.com.service.impl.EmployeeServiceImpl">
+        <property name="employeeDao" ref="empDao"/>
+    </bean>
+
+    <bean id="addressService" class="main.java.com.service.impl.AddressServiceImpl">
+        <property name="addressDao" ref="addressDao"/>
+    </bean>
+</beans>
